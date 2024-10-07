@@ -24,7 +24,7 @@ To use the SSH Key Publisher script, run the following command:
 ```bash
 ./publish_key.sh --help
 
-#### Options
+# Options:
 
 - `--help` Show this help message and exit.
 - `--no-alias` Skip adding an alias to the `~/.ssh/config` file.
@@ -33,3 +33,4 @@ To use the SSH Key Publisher script, run the following command:
 - `-i`, `--key` Path to the public key file (optional).
 - `-a`, `--alias` Alias for quick SSH connection (optional).
 - `-p` The password for the remote user (if applicable).
+```
