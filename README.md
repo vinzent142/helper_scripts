@@ -1,10 +1,11 @@
-# Scripts Collection
+# Script Collection
 
 Welcome to the **Scripts Collection** repository! This repository contains various useful scripts for automation, server management, and system administration tasks.
 
 ## Table of Contents
 
 - [SSH Key Publisher](#ssh-key-publisher)
+- [List and connect to ssh alias](#list-and-connect-to-ssh-alias)
 
 ## SSH Key Publisher
 
@@ -34,3 +35,22 @@ To use the SSH Key Publisher script, run the following command:
 - `-a`, `--alias` Alias for quick SSH connection (optional).
 - `-p` The password for the remote user (if applicable).
 ```
+
+## List and connect to ssh alias
+
+The `list_ssh_aliases.sh` script displays all current SSH aliases stored in the `~/.ssh/config` file in a neatly formatted table. It allows users to easily identify their SSH configurations and quickly connect to a desired host by selecting the corresponding entry number.
+
+### Features
+
+- *Lists all SSH aliases along with their corresponding hosts and users in a structured format.
+- Automatically establishes an SSH connection to the selected host using the appropriate user.
+
+### Usage
+1. **Run the Script**:
+`bash ./list_ssh_aliases.sh`
+
+2. **Add as alias**
+ `vim ~/.bashrc` or `vim ~/.zshrc`
+Add `alias sshm='/path/to/your/scripts/list_ssh_aliases.sh'`
+`source ~/.bashrc` or `source ~/.zshrc`
+`sshm`
