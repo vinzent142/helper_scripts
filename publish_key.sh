@@ -1,5 +1,31 @@
 #!/bin/bash
 
+# Author: vinzent142
+# GitHub: https://github.com/vinzent142
+# Date Created: 2024-10-07
+# Version: 1
+# Date Updated: 2024-10-07
+# Description:
+#   This script uploads a public SSH key to a remote server's ~/.ssh/authorized_keys file
+#   and optionally creates a quick connection alias in the ~/.ssh/config file.
+#   
+#   Usage:
+#     publish_key.sh [OPTIONS]
+#   
+#   Options:
+#     --help         Show this help message and exit.
+#     --no-alias     Skip adding an alias to the ~/.ssh/config file.
+#     --host         Specify the remote host (hostname or IP address).
+#     --user         Specify the remote user.
+#     --key          Path to the public key file (optional).
+#     --alias        Alias for quick SSH connection (optional).
+#     PASSWORD       The password for the remote user (if applicable).
+#   
+#   The script will prompt for the remote host and user if not provided.
+#   If no key is given, it will list existing keys in the user's ~/.ssh directory for selection.
+#   Password-based authentication is supported if necessary.
+
+
 # Function to list available SSH keys
 list_ssh_keys() {
     echo "Available SSH keys:"
@@ -124,6 +150,11 @@ fi
 # Check if the remote user is given, if not, ask for it
 if [ -z "$remote_user" ]; then
     read -p "Enter the remote username: " remote_user
+fi
+
+# Check if the SSH alias is provided, if not, ask for it unless --no-alias is used
+if [ -z "$alias_name" ] && [ -z "$no_alias" ]; then
+    read -p "Enter an alias for quick SSH connection (leave blank for no alias): " alias_name
 fi
 
 # Check if the key file is provided, if not, prompt to select from existing keys
