@@ -46,11 +46,11 @@ The `list_ssh_aliases.sh` script displays all current SSH aliases stored in the 
 - Automatically establishes an SSH connection to the selected host using the appropriate user.
 
 ### Usage
-1. **Run the Script**:
-`bash ./list_ssh_aliases.sh`
+#### Run the Script
+- `bash ./list_ssh_aliases.sh`
 
-2. **Add as alias**
- `vim ~/.bashrc` or `vim ~/.zshrc`
-Add `alias sshm='/path/to/your/scripts/list_ssh_aliases.sh'`
-`source ~/.bashrc` or `source ~/.zshrc`
-`sshm`
+#### Add as alias
+- `vim ~/.bashrc` or `vim ~/.zshrc`
+- Add `alias sshm='/path/to/your/scripts/list_ssh_aliases.sh'`
+- `source ~/.bashrc` or `source ~/.zshrc`
+- `sshm`
