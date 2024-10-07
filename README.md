@@ -42,7 +42,7 @@ The `list_ssh_aliases.sh` script displays all current SSH aliases stored in the 
 
 ### Features
 
-- *Lists all SSH aliases along with their corresponding hosts and users in a structured format.
+- Lists all SSH aliases along with their corresponding hosts and users in a structured format.
 - Automatically establishes an SSH connection to the selected host using the appropriate user.
 
 ### Usage
