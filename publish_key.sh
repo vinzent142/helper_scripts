@@ -19,6 +19,7 @@
 #     --user         Specify the remote user.
 #     --key          Path to the public key file (optional).
 #     --alias        Alias for quick SSH connection (optional).
+#     --port         Specify the SSH port (default: 22).
 #     PASSWORD       The password for the remote user (if applicable).
 #   
 #   The script will prompt for the remote host and user if not provided.
@@ -69,6 +70,7 @@ add_ssh_config_entry() {
     local host="$2"
     local remote_user="$3"
     local private_key="$4"
+    local port="$5"
     local config_file="$HOME/.ssh/config"
 
     # Ensure the .ssh directory and config file exist
@@ -92,6 +94,7 @@ add_ssh_config_entry() {
         echo "Host $alias_name"
         echo "    HostName $host"
         echo "    User $remote_user"
+        echo "    Port $port"
         echo "    IdentityFile $private_key"  # Add private key path for quick connection
     } >> "$config_file"
 
@@ -112,7 +115,8 @@ show_help() {
     echo -e "  \033[1;33m-h, --host\033[0m      Specify the remote host (hostname or IP address)"
     echo -e "  \033[1;33m-u, --user\033[0m      Specify the remote user"
     echo -e "  \033[1;33m-i, --key\033[0m       Path to the public key file (optional)"
-    echo -e "  \033[1;33m-a, --alias\033[0m     Alias for quick SSH connection (optional)\n"
+    echo -e "  \033[1;33m-a, --alias\033[0m     Alias for quick SSH connection (optional)"
+    echo -e "  \033[1;33m--port\033[0m          Specify the SSH port (default: 22)\n"
     
     echo -e "\033[1;34mPositional Arguments (optional):\033[0m"
     echo -e "  \033[1;32mPASSWORD\033[0m      The password for the remote user (if applicable)\n"
@@ -122,11 +126,16 @@ show_help() {
     echo -e "     Uploads the key and creates the alias 'myalias'."
     echo -e "  \033[1;33m2.\033[0m \033[1m./publish_key.sh --host remote_host --user remote_user --key ~/.ssh/id_rsa.pub --no-alias\033[0m"
     echo -e "     Uploads the key but skips creating an alias."
-    echo -e "  \033[1;33m3.\033[0m \033[1m./publish_key.sh\033[0m"
+    echo -e "  \033[1;33m3.\033[0m \033[1m./publish_key.sh --host remote_host --user remote_user --port 2222 --alias myalias\033[0m"
+    echo -e "     Uploads the key with custom port 2222 and creates the alias 'myalias'."
+    echo -e "  \033[1;33m4.\033[0m \033[1m./publish_key.sh\033[0m"
     echo -e "     Prompts for host, user, key, and alias.\n"
 
     echo -e "\033[1;31mNote:\033[0m The script will automatically check if the public key is valid."
 }
+
+# Set default port
+port=22
 
 # Parse command line arguments
 while [[ "$#" -gt 0 ]]; do
@@ -137,6 +146,7 @@ while [[ "$#" -gt 0 ]]; do
         -u|--user) remote_user="$2"; shift 2 ;;
         -i|--key) public_key="$2"; shift 2 ;;
         -a|--alias) alias_name="$2"; shift 2 ;;
+        --port) port="$2"; shift 2 ;;
         -p) password="$2"; shift 2 ;;  # Get password if provided
         *) password="$1"; shift ;;  # Assume anything else is a password
     esac
@@ -201,16 +211,16 @@ fi
 
 # Check if SSH directory exists on the remote server and create it if necessary
 if [ -z "$password" ]; then
-    ssh "$remote_user@$host" "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
+    ssh -p "$port" "$remote_user@$host" "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
 else
-    sshpass -p "$password" ssh "$remote_user@$host" "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
+    sshpass -p "$password" ssh -p "$port" "$remote_user@$host" "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
 fi
 
 # Upload the public key to the remote server
 if [ -z "$password" ]; then
-    cat "$selected_key" | ssh "$remote_user@$host" "cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+    cat "$selected_key" | ssh -p "$port" "$remote_user@$host" "cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 else
-    cat "$selected_key" | sshpass -p "$password" ssh "$remote_user@$host" "cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+    cat "$selected_key" | sshpass -p "$password" ssh -p "$port" "$remote_user@$host" "cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 fi
 
 if [ $? -eq 0 ]; then
@@ -218,7 +228,7 @@ if [ $? -eq 0 ]; then
 
     # Check if the --no-alias flag is provided
     if [ -z "$no_alias" ] && [ -n "$alias_name" ]; then
-        add_ssh_config_entry "$alias_name" "$host" "$remote_user" "$private_key"
+        add_ssh_config_entry "$alias_name" "$host" "$remote_user" "$private_key" "$port"
     fi
 else
     echo -e "\033[1;31mFailed to upload SSH public key.\033[0m"

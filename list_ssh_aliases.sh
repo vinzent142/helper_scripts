@@ -21,13 +21,14 @@ RESET="\e[0m"
 # Function to parse the SSH config file
 function parse_ssh_config() {
     local index=1
-    printf "${BOLD}%-5s %-15s %-20s %-10s %-30s${NORMAL}\n" "Index" "Alias" "HostName" "User" "IdentityFile"
-    echo "-------------------------------------------------------------------------------------------------"
+    printf "${BOLD}%-5s %-15s %-20s %-10s %-6s %-30s${NORMAL}\n" "Index" "Alias" "HostName" "User" "Port" "IdentityFile"
+    echo "---------------------------------------------------------------------------------------------------------------"
     
     # Variables to store details
     local alias=""
     local hostname=""
     local user=""
+    local port=""
     local identityfile=""
 
     # Read the config file and extract relevant fields
@@ -35,19 +36,22 @@ function parse_ssh_config() {
         if [[ $line =~ ^Host\ (.+) ]]; then
             # Print the previous host's information if it exists
             if [[ -n $alias ]]; then
-                printf "%-5s ${GREEN}%-15s${NORMAL} ${YELLOW}%-20s${NORMAL} ${BLUE}%-10s${NORMAL} ${RESET}%-30s\n" \
-                    "$index" "$alias" "${hostname:-N/A}" "${user:-N/A}" "${identityfile:-N/A}"
+                printf "%-5s ${GREEN}%-15s${NORMAL} ${YELLOW}%-20s${NORMAL} ${BLUE}%-10s${NORMAL} %-6s ${RESET}%-30s\n" \
+                    "$index" "$alias" "${hostname:-N/A}" "${user:-N/A}" "${port:-22}" "${identityfile:-N/A}"
                 index=$((index + 1))
             fi
             # Start a new entry
             alias=${BASH_REMATCH[1]}
             hostname=""
             user=""
+            port=""
             identityfile=""
         elif [[ $line =~ ^[[:space:]]*HostName[[:space:]]+(.*) ]]; then
             hostname=${BASH_REMATCH[1]}
         elif [[ $line =~ ^[[:space:]]*User[[:space:]]+(.*) ]]; then
             user=${BASH_REMATCH[1]}
+        elif [[ $line =~ ^[[:space:]]*Port[[:space:]]+(.*) ]]; then
+            port=${BASH_REMATCH[1]}
         elif [[ $line =~ ^[[:space:]]*IdentityFile[[:space:]]+(.*) ]]; then
             identityfile=${BASH_REMATCH[1]}
         fi
@@ -55,8 +59,8 @@ function parse_ssh_config() {
 
     # Print the last host's information if it exists
     if [[ -n $alias ]]; then
-        printf "%-5s ${GREEN}%-15s${NORMAL} ${YELLOW}%-20s${NORMAL} ${BLUE}%-10s${NORMAL} ${RESET}%-30s\n" \
-            "$index" "$alias" "${hostname:-N/A}" "${user:-N/A}" "${identityfile:-N/A}"
+        printf "%-5s ${GREEN}%-15s${NORMAL} ${YELLOW}%-20s${NORMAL} ${BLUE}%-10s${NORMAL} %-6s ${RESET}%-30s\n" \
+            "$index" "$alias" "${hostname:-N/A}" "${user:-N/A}" "${port:-22}" "${identityfile:-N/A}"
     fi
 }
 
