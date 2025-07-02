@@ -162,6 +162,14 @@ if [ -z "$remote_user" ]; then
     read -p "Enter the remote username: " remote_user
 fi
 
+# Check if the port is default, ask if user wants to change it
+if [ "$port" -eq 22 ]; then
+    read -p "Enter the SSH port (default: 22): " port_input
+    if [ -n "$port_input" ]; then
+        port="$port_input"
+    fi
+fi
+
 # Check if the SSH alias is provided, if not, ask for it unless --no-alias is used
 if [ -z "$alias_name" ] && [ -z "$no_alias" ]; then
     read -p "Enter an alias for quick SSH connection (leave blank for no alias): " alias_name
